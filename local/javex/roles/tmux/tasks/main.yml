@@ -1,0 +1,20 @@
+---
+- name: Install tmux plugin manager
+  ansible.builtin.git:
+    repo: https://github.com/tmux-plugins/tpm
+    dest: ~/.config/tmux/plugins/tpm
+    version: master
+    update: false
+
+- name: Set up tmux config
+  ansible.builtin.file:
+    state: link
+    dest: ~/.config/tmux/tmux.conf
+    src: "{{ role_path }}/files/tmux.conf"
+  when: ansible_connection == 'local'
+
+- name: Set up tmux config by copying
+  ansible.builtin.copy:
+    src: tmux.conf
+    dest: ~/.config/tmux/tmux.conf
+  when: ansible_connection != 'local'
