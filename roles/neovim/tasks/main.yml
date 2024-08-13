@@ -19,7 +19,7 @@
 
 - name: Clone repo
   ansible.builtin.git:
-    repo: https://github.com/Javex/neovim.git
+    repo: git@github.com:Javex/neovim.git
     dest: ~/.config/nvim
     version: main
     remote: github
