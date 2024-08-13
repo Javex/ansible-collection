@@ -1,7 +1,14 @@
 ---
 - name: Install tmux package
+  become: true
   ansible.builtin.package:
     name: tmux
+  when: ansible_distribution != 'MacOSX'
+
+- name: Install tmux package
+  ansible.builtin.package:
+    name: tmux
+  when: ansible_distribution == 'MacOSX'
 
 - name: Install tmux plugin manager
   ansible.builtin.git:
