@@ -1,0 +1,17 @@
+argument_specs:
+  main:
+    options:
+      zsh_regular_username:
+        type: str
+        description: |
+          The username for the "regular" user, i.e. me.
+          It should normally be taken from the "regular_username" variable
+          that each host has. It's required and there's no more default in
+          the role because it can lead to subtle errors if the username is
+          wrong.
+        required: true
+      zsh_prezto_repo:
+        type: str
+        description: |
+          URL for repostitory that contains the ZSH config
+        required: true

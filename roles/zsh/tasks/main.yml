@@ -1,0 +1,72 @@
+---
+- name: Create tmp directory locally
+  file:
+    state: directory
+    path: ./tmp
+    mode: "0755"
+  delegate_to: 127.0.0.1
+  become: false
+  changed_when: false
+- name: Configure zsh for regular user
+  # On desktops we run with a local connection and we don't need
+  # to "become" because we're already the right user. This ensures
+  # that only on remote machines do we become the user
+  # It wouldn't be such a big deal but WSL2 (Windows) doesn't support
+  # ACLs and ansible needs "setfacl" to work properly for becoming an
+  # unprivileged user. This sidesteps the issue.
+  # become: "{{ (ansible_connection | default('notlocal')) != 'local' }}"
+  become: "{{ ansible_user_id != zsh_regular_username }}"
+  become_user: "{{ zsh_regular_username }}"
+  block:
+    - name: Clone zsh config locally
+      git: # noqa: latest
+        repo: "{{ zsh_prezto_repo }}"
+        dest: ~/.zprezto
+        update: false # Don't update here, use update.yml playbook for that
+        # Skip keyfile if it doesn't exist: In a local deployment just use the
+        # default creds (usually 1Password agent)
+        key_file: "{{ flozza_deployment_key.dest | default(omit) }}"
+    - name: Fetch templates locally
+      fetch:
+        src: ~/.zprezto/runcoms/{{ item }}.tmpl
+        dest: ./tmp/
+        flat: true
+      with_items:
+        - zshrc
+        - zlogin
+    - name: Process zsh templates
+      template:
+        src: ./tmp/{{ item }}.tmpl
+        dest: ~/.zprezto/runcoms/{{ item }}
+        mode: "644"
+      with_items:
+        - zshrc
+        - zlogin
+    - name: Link zsh files
+      file:
+        src: ~/.zprezto/runcoms/{{ item }}
+        dest: ~/.{{ item }}
+        state: link
+      with_items:
+        - zlogin
+        - zlogout
+        - zpreztorc
+        - zprofile
+        - zshenv
+        - zshrc
+    - name: Create folder for extra rc files
+      file:
+        state: directory
+        dest: ~/.zprezto/runcoms/zshrc.d
+        mode: "755"
+    - name: Copy dircolors
+      copy:
+        src: dircolors
+        dest: ~/.dircolors
+        mode: "644"
+- name: Set up zsh shell
+  become: true
+  user:
+    name: "{{ zsh_regular_username }}"
+    shell: /bin/zsh
+  when: zsh_setup_shell
