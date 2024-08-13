@@ -1,12 +1,4 @@
 ---
-- name: Create tmp directory locally
-  file:
-    state: directory
-    path: ./tmp
-    mode: "0755"
-  delegate_to: 127.0.0.1
-  become: false
-  changed_when: false
 - name: Configure zsh for regular user
   # On desktops we run with a local connection and we don't need
   # to "become" because we're already the right user. This ensures
@@ -19,31 +11,15 @@
   become_user: "{{ zsh_regular_username }}"
   block:
     - name: Clone zsh config locally
-      git: # noqa: latest
+      ansible.builtin.git: # noqa: latest
         repo: "{{ zsh_prezto_repo }}"
         dest: ~/.zprezto
         update: false # Don't update here, use update.yml playbook for that
         # Skip keyfile if it doesn't exist: In a local deployment just use the
         # default creds (usually 1Password agent)
         key_file: "{{ flozza_deployment_key.dest | default(omit) }}"
-    - name: Fetch templates locally
-      fetch:
-        src: ~/.zprezto/runcoms/{{ item }}.tmpl
-        dest: ./tmp/
-        flat: true
-      with_items:
-        - zshrc
-        - zlogin
-    - name: Process zsh templates
-      template:
-        src: ./tmp/{{ item }}.tmpl
-        dest: ~/.zprezto/runcoms/{{ item }}
-        mode: "644"
-      with_items:
-        - zshrc
-        - zlogin
     - name: Link zsh files
-      file:
+      ansible.builtin.file:
         src: ~/.zprezto/runcoms/{{ item }}
         dest: ~/.{{ item }}
         state: link
@@ -55,18 +31,18 @@
         - zshenv
         - zshrc
     - name: Create folder for extra rc files
-      file:
+      ansible.builtin.file:
         state: directory
         dest: ~/.zprezto/runcoms/zshrc.d
         mode: "755"
     - name: Copy dircolors
-      copy:
+      ansible.builtin.copy:
         src: dircolors
         dest: ~/.dircolors
         mode: "644"
 - name: Set up zsh shell
   become: true
-  user:
+  ansible.builtin.user:
     name: "{{ zsh_regular_username }}"
     shell: /bin/zsh
   when: zsh_setup_shell
