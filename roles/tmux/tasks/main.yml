@@ -1,4 +1,8 @@
 ---
+- name: Install tmux package
+  ansible.builtin.package:
+    name: tmux
+
 - name: Install tmux plugin manager
   ansible.builtin.git:
     repo: https://github.com/tmux-plugins/tpm
