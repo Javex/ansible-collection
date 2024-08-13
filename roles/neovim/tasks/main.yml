@@ -17,36 +17,9 @@
       - neovim
   when: ansible_distribution == 'MacOSX'
 
-- name: Clone NvChad repo
+- name: Clone repo
   ansible.builtin.git:
-    repo: https://github.com/NvChad/NvChad
+    repo: https://github.com/Javex/neovim.git
     dest: ~/.config/nvim
-    depth: 1
-    version: v2.0
-
-- name: Install custom config by linking
-  ansible.builtin.file:
-    state: link
-    path: ~/.config/nvim/lua/custom
-    src: "{{ role_path }}/files/custom"
-  when: ansible_connection == 'local'
-
-# Yes it sucks having to copy each file by hand but both copy and synchronize
-# aren't great because they don't do well with --diff (among other things)
-- name: Install custom config by copying
-  when: ansible_connection != 'local'
-  block:
-    - name: Create directories for config files
-      ansible.builtin.file:
-        state: directory
-        path: ~/.config/nvim/lua/custom/configs
-    - name: Copy individual files
-      ansible.builtin.copy:
-        src: "custom/{{ item }}"
-        dest: "~/.config/nvim/lua/custom/{{ item }}"
-      loop:
-        - chadrc.lua
-        - init.lua
-        - mappings.lua
-        - plugins.lua
-        - configs/lspconfig.lua
+    version: main
+    remote: github
