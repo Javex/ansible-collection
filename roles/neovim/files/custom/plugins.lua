@@ -83,6 +83,7 @@ local plugins = {
         -- Python
         "pyright",
         "debugpy",
+        "ruff",
 
         -- Rust
         "rust-analyzer",
@@ -108,6 +109,7 @@ local plugins = {
         caddyfile = { "caddy" },
         go = { "gofmt" },
         html = { "djlint" },
+        python = { "ruff_format" },
       },
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
       formatters = {
