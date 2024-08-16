@@ -23,3 +23,4 @@
     dest: ~/.config/nvim
     version: main
     remote: github
+    update: false
