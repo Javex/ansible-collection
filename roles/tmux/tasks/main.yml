@@ -5,6 +5,17 @@
     name: tmux
   when: ansible_distribution != 'MacOSX'
 
+- name: Install clipboard dependencies
+  become: true
+  # TODO: Support more methods, e.g. osc
+  # TODO: Support more distros, e.g. Ubuntu & MacOS
+  # TODO: Test how to support remote systems (i.e. servers), e.g. via osc?
+  when: ansible_distribution == 'Archlinux' and tmux_install_clipboard
+  ansible.builtin.package:
+    name:
+      - wl-clipboard  # Wayland
+      - xsel  # X
+
 - name: Install tmux package
   ansible.builtin.package:
     name: tmux

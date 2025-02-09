@@ -1,0 +1,3 @@
+# When this is true, try to install necessary packages for full clipboard
+# support, for example xsel, wl-copy or (in the future) osc.
+tmux_install_clipboard: false
