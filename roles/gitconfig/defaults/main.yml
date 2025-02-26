@@ -1,0 +1,40 @@
+gitconfig_defaults:
+  # https://blog.gitbutler.com/how-git-core-devs-configure-git/
+  rebase.autoStash: "true"
+  rebase.autoSquash: "true"
+  rebase.updateRefs: "true"
+
+  column.ui: "auto"
+
+  branch.sort: "-committerdate"
+
+  tag.sort: "version:refname"
+
+  init.defaultBranch: "main"
+
+  diff.algorithm: "histogram"
+  diff.colorMoved: "plain"
+  diff.mnemonicPrefix: "true"
+  diff.renames: "true"
+
+  push.default: "simple"
+  push.autoSetupRemote: "true"
+  push.followTags: "true"
+
+  fetch.prune: "true"
+  fetch.pruneTags: "true"
+  fetch.all: "true"
+
+  commit.verbose: "true"
+
+  rerere.enabled: "true"
+  rerere.autoupdate: "true"
+
+  merge.conflictstyle: "zdiff3"
+
+  pull.rebase: "true"
+
+# Provide more config here above the defaults set above
+# Make sure to always quote any value, especially any booleans so that yaml
+# doesn't interpret them!
+gitconfig_extra: {}
