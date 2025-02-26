@@ -1,5 +1,5 @@
 - name: Apply git config options
-  ansible.builtin.git_config:
+  community.general.git_config:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
     scope: global

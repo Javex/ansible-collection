@@ -27,6 +27,7 @@ gitconfig_defaults:
 
   commit.verbose: "true"
 
+  # https://blog.gitbutler.com/git-tips-and-tricks/
   rerere.enabled: "true"
   rerere.autoupdate: "true"
 
