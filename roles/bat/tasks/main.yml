@@ -1,0 +1,50 @@
+- name: Install bat on macOS using Homebrew
+  community.general.homebrew:
+    name: bat
+    state: present
+  when: ansible_facts.system == "Darwin"
+
+- name: Install bat on Arch Linux using pacman
+  community.general.pacman:
+    name: bat
+    state: present
+  when: ansible_facts.distribution == "Archlinux"
+  become: true
+
+- name: Install bat on Ubuntu using apt
+  ansible.builtin.apt:
+    name: bat
+    state: present
+  when: ansible_facts.distribution == "Ubuntu"
+  become: true
+
+- name: Ensure local bin directory exists on Ubuntu
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: "0755"
+  when: ansible_facts.distribution == "Ubuntu"
+
+- name: Create symlink for bat on Ubuntu (bat is installed as batcat)
+  ansible.builtin.file:
+    src: /usr/bin/batcat
+    dest: "{{ ansible_env.HOME }}/.local/bin/bat"
+    state: link
+    force: true
+  when: ansible_facts.distribution == "Ubuntu"
+
+- name: Ensure bat configuration directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/bat"
+    state: directory
+    mode: "0755"
+
+- name: Deploy default bat configuration file
+  ansible.builtin.copy:
+    content: |
+      # Default bat configuration
+      # For example, setting a theme and enabling paging.
+      --theme="TwoDark"
+      --paging=always
+    dest: "{{ ansible_env.HOME }}/.config/bat/config"
+    mode: "0644"
