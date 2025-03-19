@@ -1,0 +1,19 @@
+- name: Download script
+  ansible.builtin.get_url:
+    url: https://github.com/so-fancy/diff-so-fancy/releases/download/v1.4.4/diff-so-fancy
+    dest: ~/.local/bin/diff-so-fancy
+    checksum: sha256:14ded2376a20ce089952c64a2894afeb70ff0b77e5d7b661eb1c973820208e59
+    mode: "0775"
+
+- name: Configure git
+  community.general.git_config:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    scope: global
+  # Options taken from doc:
+  # https://github.com/so-fancy/diff-so-fancy/tree/694f4e40a5a535b970dcff193ec1114e27528f1e?tab=readme-ov-file#with-git
+  # Note: Not reconfiguring colors because it didn't look great
+  # with solarized as a theme
+  with_dict:
+    core.pager: "diff-so-fancy | less --tabs=4 -RF"
+    interactive.diffFilter: "diff-so-fancy --patch"
