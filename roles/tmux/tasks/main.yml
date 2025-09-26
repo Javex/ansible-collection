@@ -35,14 +35,6 @@
     update: false
 
 - name: Set up tmux config
-  ansible.builtin.file:
-    state: link
+  ansible.builtin.template:
     dest: ~/.config/tmux/tmux.conf
-    src: "{{ role_path }}/files/tmux.conf"
-  when: ansible_connection == 'local'
-
-- name: Set up tmux config by copying
-  ansible.builtin.copy:
-    src: tmux.conf
-    dest: ~/.config/tmux/tmux.conf
-  when: ansible_connection != 'local'
+    src: "tmux.conf"
