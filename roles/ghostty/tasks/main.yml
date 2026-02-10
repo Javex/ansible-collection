@@ -1,14 +1,21 @@
 ---
-- name: Fail when not running on Arch Linux
+- name: Fail when not on unsupported operating system
   ansible.builtin.fail:
-    msg: "The ghostty role only supports Arch Linux. Current OS: {{ ansible_facts['distribution'] | default('unknown') }}."
-  when: ansible_facts['distribution'] != 'Archlinux'
+    msg: The ghostty role only supports Arch Linux and macOS.
+  when: ansible_facts['distribution'] != 'Archlinux' and ansible_facts['system'] != 'Darwin'
 
-- name: Install ghostty
-  become: true
-  ansible.builtin.pacman:
+- name: Install ghostty on macOS using Homebrew Cask
+  community.general.homebrew_cask:
     name: ghostty
     state: present
+  when: ansible_facts['system'] == 'Darwin'
+
+- name: Install ghostty on Arch Linux using pacman
+  community.general.pacman:
+    name: ghostty
+    state: present
+  become: true
+  when: ansible_facts['distribution'] == 'Archlinux'
 
 - name: Ensure ghostty config directory exists
   ansible.builtin.file:
