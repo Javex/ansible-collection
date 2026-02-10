@@ -5,3 +5,5 @@ theme = dark:Catppuccin Mocha,light:Catppuccin Latte
 # both macOS and Linux
 initial-command = zsh -c 'tmux new-session -A'
 maximize
+# See https://ghostty.org/docs/help/terminfo#ssh
+shell-integration-features = ssh-terminfo,ssh-env
