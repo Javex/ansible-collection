@@ -1,0 +1,23 @@
+---
+- name: Fail when not running on Arch Linux
+  ansible.builtin.fail:
+    msg: "The ghostty role only supports Arch Linux. Current OS: {{ ansible_facts['distribution'] | default('unknown') }}."
+  when: ansible_facts['distribution'] != 'Archlinux'
+
+- name: Install ghostty
+  become: true
+  ansible.builtin.pacman:
+    name: ghostty
+    state: present
+
+- name: Ensure ghostty config directory exists
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ansible_facts['user_dir'] }}/.config/ghostty"
+
+- name: Link ghostty config
+  ansible.builtin.file:
+    state: link
+    src: "{{ role_path }}/files/config"
+    dest: "{{ ansible_facts['user_dir'] }}/.config/ghostty/config"
+    force: true

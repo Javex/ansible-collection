@@ -1,0 +1,5 @@
+theme = dark:Catppuccin Mocha,light:Catppuccin Latte
+# This automatically attaches to tmux if it's the first Ghostty terminal. Any
+# subsequent Ghostty instance won't attach automatically.
+initial-command = /usr/bin/tmux new-session -A
+maximize
