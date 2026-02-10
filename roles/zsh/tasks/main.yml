@@ -7,7 +7,7 @@
   # ACLs and ansible needs "setfacl" to work properly for becoming an
   # unprivileged user. This sidesteps the issue.
   # become: "{{ (ansible_connection | default('notlocal')) != 'local' }}"
-  become: "{{ ansible_user_id != zsh_regular_username }}"
+  become: "{{ ansible_facts['user_id'] != zsh_regular_username }}"
   become_user: "{{ zsh_regular_username }}"
   block:
     - name: Clone zsh config locally
