@@ -13,8 +13,8 @@
   when: ansible_distribution == 'Archlinux' and tmux_install_clipboard
   ansible.builtin.package:
     name:
-      - wl-clipboard  # Wayland
-      - xsel  # X
+      - wl-clipboard # Wayland
+      - xsel # X
 
 - name: Install tmux package
   ansible.builtin.package:
@@ -34,7 +34,16 @@
     version: master
     update: false
 
+- name: Install catppuccin themes
+  ansible.builtin.git:
+    # Using my own fork since upstream uses `set -o` which means switching
+    # themes isn't possible.
+    repo: https://github.com/Javex/catppuccin-tmux.git
+    dest: ~/.config/tmux/plugins/catppuccin/tmux
+    version: main
+    update: false
+
 - name: Set up tmux config
-  ansible.builtin.template:
+  ansible.builtin.copy:
     dest: ~/.config/tmux/tmux.conf
     src: "tmux.conf"
