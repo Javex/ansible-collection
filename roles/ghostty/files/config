@@ -4,6 +4,14 @@ theme = dark:Catppuccin Mocha,light:Catppuccin Latte
 # Launch inside zsh to ensure PATH is set up correctly and tmux can be found on
 # both macOS and Linux
 initial-command = zsh -c 'tmux new-session -A'
+
+# I use the option key to switch tmux panes so it needs to be treated as an alt
+# key. Without this option pressing the navigation shortcut for tmux instead
+# prints some Unicode character.
+# Only enabling this for the left key because that's the only one I use at the
+# moment.
+macos-option-as-alt = left
+
 maximize
 # See https://ghostty.org/docs/help/terminfo#ssh
 shell-integration-features = ssh-terminfo,ssh-env
