@@ -12,6 +12,11 @@ initial-command = zsh -c 'tmux new-session -A'
 # moment.
 macos-option-as-alt = left
 
+# Default size is 13, but that tends to cut off the neovim 80 character bar,
+# giving just not enough space for a full line when working with split panes.
+# Scaling it down to 12 tends to leave enough room.
+font-size = 12
+
 maximize
 # See https://ghostty.org/docs/help/terminfo#ssh
 shell-integration-features = ssh-terminfo,ssh-env
