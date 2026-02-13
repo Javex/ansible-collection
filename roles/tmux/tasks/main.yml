@@ -44,6 +44,10 @@
     update: false
 
 - name: Set up tmux config
+  loop:
+    - tmux.conf
+    - catppuccin_dark.conf
+    - catppuccin_light.conf
   ansible.builtin.copy:
-    dest: ~/.config/tmux/tmux.conf
-    src: "tmux.conf"
+    dest: ~/.config/tmux/{{ item }}
+    src: "{{ item }}"
