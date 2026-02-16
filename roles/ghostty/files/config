@@ -20,3 +20,7 @@ font-size = 12
 maximize
 # See https://ghostty.org/docs/help/terminfo#ssh
 shell-integration-features = ssh-terminfo,ssh-env
+
+# Ghostty directly opens tmux which saves its session. Closing Ghotty is not a
+# destructive operation so we don't need to confirm if it's okay to close.
+confirm-close-surface = false
