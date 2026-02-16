@@ -48,6 +48,8 @@
     - tmux.conf
     - catppuccin_dark.conf
     - catppuccin_light.conf
-  ansible.builtin.copy:
-    dest: ~/.config/tmux/{{ item }}
+  ansible.builtin.file:
+    state: link
     src: "{{ item }}"
+    dest: ~/.config/tmux/{{ item }}
+    force: true
