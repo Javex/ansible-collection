@@ -50,6 +50,6 @@
     - catppuccin_light.conf
   ansible.builtin.file:
     state: link
-    src: "{{ item }}"
+    src: "{{ role_path }}/files/{{ item }}"
     dest: ~/.config/tmux/{{ item }}
     force: true
