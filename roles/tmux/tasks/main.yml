@@ -44,12 +44,8 @@
     update: false
 
 - name: Set up tmux config
-  loop:
-    - tmux.conf
-    - catppuccin_dark.conf
-    - catppuccin_light.conf
   ansible.builtin.file:
     state: link
-    src: "{{ role_path }}/files/{{ item }}"
-    dest: ~/.config/tmux/{{ item }}
+    src: "{{ role_path }}/files/tmux.conf"
+    dest: ~/.config/tmux/tmux.conf
     force: true
