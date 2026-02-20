@@ -3,7 +3,13 @@
   become: true
   ansible.builtin.package:
     name: tmux
-  when: ansible_distribution != 'MacOSX'
+  when: ansible_distribution != 'MacOSX' and tmux_install_method != 'snap'
+
+- name: Install tmux via snap
+  become: true
+  community.general.snap:
+    name: tmux
+  when: ansible_distribution != 'MacOSX' and tmux_install_method == 'snap'
 
 - name: Install clipboard dependencies
   become: true

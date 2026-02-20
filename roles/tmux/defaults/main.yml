@@ -1,3 +1,6 @@
 # When this is true, try to install necessary packages for full clipboard
 # support, for example xsel, wl-copy or (in the future) osc.
 tmux_install_clipboard: false
+
+# Set to 'snap' to use snap on Ubuntu instead of apt
+tmux_install_method: default
