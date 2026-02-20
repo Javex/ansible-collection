@@ -5,6 +5,8 @@
       - neovim
       - ripgrep
       - npm
+      - tree-sitter-cli
+      - fd
   when: ansible_distribution == 'Archlinux'
 
 - name: Include Ubuntu install
