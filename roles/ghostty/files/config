@@ -24,3 +24,6 @@ shell-integration-features = ssh-terminfo,ssh-env
 # Ghostty directly opens tmux which saves its session. Closing Ghotty is not a
 # destructive operation so we don't need to confirm if it's okay to close.
 confirm-close-surface = false
+
+# Tmux handles scrollback so no need to store anything here
+scrollback-limit = 0
