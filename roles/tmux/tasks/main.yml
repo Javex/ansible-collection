@@ -9,7 +9,7 @@
   become: true
   community.general.snap:
     name: tmux
-  when: ansible_facts.distribution != 'MacOSX'
+  when: ansible_facts.distribution != 'MacOSX' and tmux_install_method == 'snap'
 
 - name: Install tmux package
   ansible.builtin.package:
