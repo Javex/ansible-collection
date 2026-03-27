@@ -1,2 +1,5 @@
-# Set to 'snap' to use snap on Ubuntu instead of apt
+# Set to 'github_release' to install from official GitHub release binaries
 tmux_install_method: default
+
+# Version to install when using github_release method
+tmux_github_release_version: "3.6a"

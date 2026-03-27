@@ -1,15 +1,20 @@
 ---
+- name: Validate tmux_install_method
+  ansible.builtin.fail:
+    msg: >-
+      Invalid tmux_install_method '{{ tmux_install_method }}'.
+      Supported values are 'default' and 'github_release'.
+  when: tmux_install_method not in ['default', 'github_release']
+
 - name: Install tmux package
   become: true
   ansible.builtin.package:
     name: tmux
-  when: ansible_facts.distribution != 'MacOSX' and tmux_install_method != 'snap'
+  when: ansible_facts.distribution != 'MacOSX' and tmux_install_method != 'github_release'
 
-- name: Install tmux via snap
-  become: true
-  community.general.snap:
-    name: tmux
-  when: ansible_facts.distribution != 'MacOSX' and tmux_install_method == 'snap'
+- name: Install tmux from official binaries
+  ansible.builtin.include_tasks: install_github_release.yml
+  when: ansible_facts.distribution != 'MacOSX' and tmux_install_method == 'github_release'
 
 - name: Install tmux package
   ansible.builtin.package:

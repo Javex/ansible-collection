@@ -1,0 +1,82 @@
+---
+- name: Include github release variables
+  ansible.builtin.include_vars:
+    file: github_release.yml
+
+- name: Fail if OS is not supported
+  ansible.builtin.fail:
+    msg: >-
+      Unsupported OS '{{ ansible_facts.system }}'.
+      Only Linux is supported for github_release install method.
+  when: _tmux_os == ''
+
+- name: Fail if architecture is not supported
+  ansible.builtin.fail:
+    msg: >-
+      Unsupported architecture '{{ ansible_facts.architecture }}'.
+      Only x86_64 is supported for github_release install method.
+  when: _tmux_arch == ''
+
+- name: Ensure cache directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ _tmux_release_cache_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Download tmux release archive
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ _tmux_release_url }}"
+    dest: "{{ _tmux_release_cache_path }}"
+    checksum: "{{ _tmux_release_checksum }}"
+    mode: "0644"
+
+- name: Extract tmux binary from archive
+  become: true
+  block:
+    - name: Create temporary extraction directory
+      ansible.builtin.tempfile:
+        state: directory
+      register: _tmux_extract_dir
+
+    - name: Extract archive
+      ansible.builtin.unarchive:
+        src: "{{ _tmux_release_cache_path }}"
+        dest: "{{ _tmux_extract_dir.path }}"
+        remote_src: true
+
+    - name: Find tmux binary
+      ansible.builtin.find:
+        paths: "{{ _tmux_extract_dir.path }}"
+        patterns: "tmux"
+        recurse: true
+        file_type: file
+      register: _tmux_binary
+
+    - name: Install tmux binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: "{{ _tmux_binary.files[0].path }}"
+        dest: /usr/local/bin/tmux
+        mode: "0755"
+        remote_src: true
+
+  always:
+    - name: Clean up temporary extraction directory
+      ansible.builtin.file:
+        path: "{{ _tmux_extract_dir.path }}"
+        state: absent
+      when: _tmux_extract_dir is defined
+
+- name: Validate tmux version
+  ansible.builtin.command: tmux -V
+  register: _tmux_version_output
+  changed_when: false
+
+- name: Verify tmux version matches expected
+  ansible.builtin.assert:
+    that:
+      - _tmux_version_output.stdout | trim == 'tmux ' ~ tmux_github_release_version
+    fail_msg: >-
+      Expected 'tmux {{ tmux_github_release_version }}'
+      but got '{{ _tmux_version_output.stdout | trim }}'

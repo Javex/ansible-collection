@@ -1,0 +1,24 @@
+---
+# Derived variables for github_release install method.
+# Included by install_github_release.yml.
+
+# Map ansible architecture/os facts to release archive naming
+_tmux_arch_map:
+  x86_64: x86_64
+
+_tmux_os_map:
+  Linux: linux
+
+_tmux_arch: "{{ _tmux_arch_map[ansible_facts.architecture] | default('') }}"
+_tmux_os: "{{ _tmux_os_map[ansible_facts.system] | default('') }}"
+
+_tmux_release_filename: "tmux-{{ tmux_github_release_version }}-{{ _tmux_os }}-{{ _tmux_arch }}.tar.gz"
+_tmux_release_url: "https://github.com/tmux/tmux-builds/releases/download/v{{ tmux_github_release_version }}/{{ _tmux_release_filename }}"
+
+_tmux_release_cache_dir: "/var/cache/ansible/tmux"
+_tmux_release_cache_path: "{{ _tmux_release_cache_dir }}/{{ _tmux_release_filename }}"
+
+_tmux_release_checksums:
+  "tmux-3.6a-linux-x86_64.tar.gz": "sha256:c0a772a5e6ca8f129b0111d10029a52e02bcbc8352d5a8c0d3de8466a1e59c2e"
+
+_tmux_release_checksum: "{{ _tmux_release_checksums[_tmux_release_filename] }}"
