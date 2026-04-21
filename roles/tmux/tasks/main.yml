@@ -21,12 +21,6 @@
     name: tmux
   when: ansible_facts.distribution == 'MacOSX'
 
-# Necessary for the erikw/tmux-dark-notify plugin
-- name: Install dark-notify for macOS package
-  ansible.builtin.package:
-    name: cormacrelf/tap/dark-notify
-  when: ansible_facts.distribution == 'MacOSX'
-
 - name: Install tmux plugin manager
   ansible.builtin.git:
     repo: https://github.com/tmux-plugins/tpm
