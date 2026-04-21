@@ -17,6 +17,7 @@
   community.general.homebrew:
     name:
       - neovim
+      - tree-sitter-cli
   when: ansible_facts.distribution == 'MacOSX'
 
 - name: Clone repo
