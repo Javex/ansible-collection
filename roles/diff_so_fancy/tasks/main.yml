@@ -1,8 +1,8 @@
 - name: Download script
   ansible.builtin.get_url:
-    url: https://github.com/so-fancy/diff-so-fancy/releases/download/v1.4.4/diff-so-fancy
+    url: https://github.com/so-fancy/diff-so-fancy/releases/download/v1.4.10/diff-so-fancy
     dest: ~/.local/bin/diff-so-fancy
-    checksum: sha256:14ded2376a20ce089952c64a2894afeb70ff0b77e5d7b661eb1c973820208e59
+    checksum: sha256:027881d4d0c6ad871c8eddc210946fb87fb3a771cb95e8a4e7dc62476caf027c
     mode: "0775"
 
 - name: Configure git
