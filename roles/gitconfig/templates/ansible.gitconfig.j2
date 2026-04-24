@@ -1,0 +1,12 @@
+# Ansible managed - do not edit manually.
+# Settings are defined in gitconfig_defaults and gitconfig_extra variables.
+{% for key, value in (gitconfig_defaults | combine(gitconfig_extra)).items() %}
+{% set parts = key.split('.') %}
+{% if parts | length == 2 %}
+[{{ parts[0] }}]
+    {{ parts[1] }} = {{ value }}
+{% elif parts | length >= 3 %}
+[{{ parts[0] }} "{{ parts[1:-1] | join('.') }}"]
+    {{ parts[-1] }} = {{ value }}
+{% endif %}
+{% endfor %}

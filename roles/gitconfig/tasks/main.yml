@@ -1,6 +1,11 @@
-- name: Apply git config options
-  community.general.git_config:
-    name: "{{ item.key }}"
-    value: "{{ item.value }}"
-    scope: global
-  with_dict: "{{ gitconfig_defaults | ansible.builtin.combine(gitconfig_extra) }}"
+---
+- name: Validate gitconfig options
+  ansible.builtin.include_tasks: validate.yml
+
+- name: Apply gitconfig via include file (default)
+  ansible.builtin.include_tasks: include.yml
+  when: not (gitconfig_use_per_key | default(false))
+
+- name: Apply gitconfig per key (legacy fallback)
+  ansible.builtin.include_tasks: per_key.yml
+  when: gitconfig_use_per_key | default(false)

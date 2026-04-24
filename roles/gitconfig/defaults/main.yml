@@ -39,3 +39,7 @@ gitconfig_defaults:
 # Make sure to always quote any value, especially any booleans so that yaml
 # doesn't interpret them!
 gitconfig_extra: {}
+
+# Set to true to fall back to setting each key individually via git_config.
+# Slower but useful if the include-file approach causes problems.
+gitconfig_use_per_key: false

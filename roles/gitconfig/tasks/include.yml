@@ -1,0 +1,51 @@
+---
+# Check first so the migration step below can use it as a condition.
+# rc=0 means the marker is present (already migrated), rc=1 means absent (first run).
+- name: Check whether ansible include block is already in ~/.gitconfig
+  ansible.builtin.command:
+    cmd: grep -qF "# BEGIN ANSIBLE MANAGED BLOCK - gitconfig include" ~/.gitconfig
+  register: _gitconfig_include_present
+  changed_when: false
+  failed_when: false
+
+# Unsets any keys that were previously written directly to ~/.gitconfig by the
+# per-key approach. Only runs on the first migration (before the include block is
+# added), so it is skipped on every subsequent run. Runs as a single shell script
+# to avoid one SSH call per key.
+# We use "unset --all" rather than plain "unset" because the per-key approach
+# could have written the same key multiple times if the playbook was run with
+# different values over time — plain unset only removes the first occurrence and
+# would leave duplicates that would silently override the new include file.
+# Exit code 5 means the key was absent; we treat that as a no-op.
+- name: Remove legacy per-key settings from ~/.gitconfig
+  ansible.builtin.shell: |
+    changed=0
+    {% for item in gitconfig_defaults | combine(gitconfig_extra) | dict2items %}
+    git config --global unset --all {{ item.key }} 2>/dev/null && changed=1 || true
+    {% endfor %}
+    [ $changed -eq 1 ] && echo changed || echo ok
+  register: _gitconfig_migration
+  changed_when: "'changed' in _gitconfig_migration.stdout"
+  when: _gitconfig_include_present.rc != 0
+
+- name: Ensure ~/.config/git directory exists
+  ansible.builtin.file:
+    state: directory
+    path: ~/.config/git
+    mode: "0755"
+
+- name: Write ansible-managed gitconfig fragment
+  ansible.builtin.template:
+    src: ansible.gitconfig.j2
+    dest: ~/.config/git/ansible.gitconfig
+    mode: "0644"
+
+- name: Ensure ~/.gitconfig includes the ansible fragment
+  ansible.builtin.blockinfile:
+    path: ~/.gitconfig
+    create: true
+    mode: "0644"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - gitconfig include"
+    block: |
+      [include]
+          path = ~/.config/git/ansible.gitconfig

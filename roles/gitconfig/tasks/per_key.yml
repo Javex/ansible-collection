@@ -1,0 +1,20 @@
+---
+# Reverse migration: clean up include-based artifacts if the new approach was
+# previously applied, so both methods are never active at the same time.
+- name: Remove ansible gitconfig include file if present
+  ansible.builtin.file:
+    state: absent
+    path: ~/.config/git/ansible.gitconfig
+
+- name: Remove ansible include block from ~/.gitconfig if present
+  ansible.builtin.blockinfile:
+    path: ~/.gitconfig
+    state: absent
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - gitconfig include"
+
+- name: Apply git config options
+  community.general.git_config:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    scope: global
+  with_dict: "{{ gitconfig_defaults | ansible.builtin.combine(gitconfig_extra) }}"
