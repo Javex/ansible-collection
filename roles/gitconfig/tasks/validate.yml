@@ -13,22 +13,25 @@
   ansible.builtin.assert:
     that: gitconfig_extra is mapping
     fail_msg: "gitconfig_extra must be a dict, got: {{ gitconfig_extra | type_debug }}"
-
-# A valid key is 'section.variable' or 'section.subsection.variable'.
-# Each part must start with a letter and contain only letters, digits, and hyphens.
+# A valid key is either:
+#   section.variable                  — both parts: letter then letters/digits/hyphens
+#   section.subsection.variable       — section and variable as above; subsection may
+#                                       contain any characters (colons, tildes, slashes,
+#                                       asterisks, dots) as used by includeIf conditions.
 # Values must be non-empty strings — unquoted YAML booleans (true/false) and
 # integers are rejected because git receives them verbatim.
 - name: Validate each gitconfig key and value
   when: not (gitconfig_use_per_key | default(false))
   ansible.builtin.assert:
     that:
-      - item.key is match('^[a-zA-Z][a-zA-Z0-9-]*(\.[a-zA-Z][a-zA-Z0-9-]*){1,2}$')
+      - item.key is match('^[a-zA-Z][a-zA-Z0-9-]*\.([a-zA-Z][a-zA-Z0-9-]*|.+\.[a-zA-Z][a-zA-Z0-9-]*)$')
       - item.value is string
       - item.value | length > 0
     fail_msg: >-
       Invalid gitconfig entry '{{ item.key }}' = '{{ item.value }}' ({{ item.value | type_debug }}).
-      Key must be 'section.variable' or 'section.subsection.variable' where each part
-      starts with a letter and contains only letters, digits and hyphens.
+      Key must be 'section.variable' or 'section.subsection.variable' where section and
+      variable start with a letter and contain only letters, digits and hyphens; subsection
+      (e.g. in includeIf keys) may contain any characters.
       Value must be a non-empty string — quote booleans and numbers in YAML to avoid
       type coercion (e.g. "true" not true, "1" not 1).
   loop: "{{ gitconfig_defaults | combine(gitconfig_extra) | dict2items }}"
