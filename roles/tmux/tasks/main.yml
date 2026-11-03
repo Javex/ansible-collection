@@ -43,3 +43,59 @@
     src: "{{ role_path }}/files/tmux.conf"
     dest: ~/.config/tmux/tmux.conf
     force: true
+
+#
+# Systemd user autostart unit
+#
+# continuum ships a default unit, but it's not very good. The unit we ship here
+# does a better job of inheriting environment variables from the GUI session.
+- name: Manage systemd user autostart
+  when:
+    - tmux_systemd_autostart
+    - ansible_facts.system == 'Linux'
+  block:
+    - name: Ensure systemd user directory exists
+      ansible.builtin.file:
+        path: ~/.config/systemd/user
+        state: directory
+        mode: "0755"
+
+    - name: Deploy systemd user unit
+      ansible.builtin.template:
+        src: tmux.service.j2
+        dest: ~/.config/systemd/user/tmux.service
+        mode: "0644"
+      register: _tmux_unit
+
+    - name: Reload user systemd manager
+      ansible.builtin.systemd:
+        scope: user
+        daemon_reload: true
+      when: _tmux_unit is changed
+
+    - name: Disable tmux service
+      ansible.builtin.systemd:
+        name: tmux.service
+        scope: user
+        enabled: false
+      when: _tmux_unit is changed
+
+    - name: Enable tmux service
+      ansible.builtin.systemd:
+        name: tmux.service
+        scope: user
+        enabled: true
+      when: _tmux_unit is changed
+
+    - name: Print restart notice
+      ansible.builtin.debug:
+        msg: >-
+          Manually restarted via `systemctl --user restart tmux` from outside
+          tmux when ready to apply new systemd unit config.
+      when: _tmux_unit is changed
+
+    - name: Enable tmux user service
+      ansible.builtin.systemd:
+        name: tmux.service
+        scope: user
+        enabled: true

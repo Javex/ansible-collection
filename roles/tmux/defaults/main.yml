@@ -3,3 +3,18 @@ tmux_install_method: default
 
 # Version to install when using github_release method
 tmux_github_release_version: "3.6a"
+
+# Deploy and enable a systemd user unit that starts tmux with the desktop
+# session, so the tmux server (and everything resurrected into it) inherits
+# the desktop environment (DISPLAY, WAYLAND_DISPLAY, KDE_* etc).
+# Replaces continuum unit
+tmux_systemd_autostart: true
+
+# Disable for hosts that don't have a GUI
+tmux_systemd_tie_to_graphical_session: true
+
+# tmux-resurrect save script executed on service stop
+tmux_resurrect_save_script: "{{ ansible_facts.user_dir }}/.config/tmux/plugins/tmux-resurrect/scripts/save.sh"
+
+# tmux binary used by the unit; github_release installs to /usr/local/bin
+tmux_binary: "{{ '/usr/local/bin/tmux' if tmux_install_method == 'github_release' else '/usr/bin/tmux' }}"

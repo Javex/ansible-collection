@@ -1,0 +1,25 @@
+[Unit]
+Description=tmux default session (detached)
+Documentation=man:tmux(1)
+{% if tmux_systemd_tie_to_graphical_session %}
+# Start after the desktop session has imported its environment, and stop with it
+After=graphical-session.target
+PartOf=graphical-session.target
+{% endif %}
+
+[Service]
+Type=forking
+ExecStart={{ tmux_binary }} new-session -d
+
+ExecStop={{ tmux_resurrect_save_script }}
+ExecStop={{ tmux_binary }} kill-server
+KillMode=control-group
+# Do not let a hung final save stall logout/shutdown for the full default timeout
+TimeoutStopSec=60
+
+[Install]
+{% if tmux_systemd_tie_to_graphical_session %}
+WantedBy=graphical-session.target
+{% else %}
+WantedBy=default.target
+{% endif %}
