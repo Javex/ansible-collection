@@ -1,0 +1,25 @@
+---
+# Note: The disable/enable pair is load-bearing: systemd does not reliably
+# apply user unit changes via daemon-reload alone, so re-enabling the unit
+# is what makes systemd pick up the new unit file.
+# Also note: handlers execute in the order DEFINED here (not the notify
+# order), so keep the sequence: reload -> disable -> enable.
+- name: Reload user systemd manager
+  ansible.builtin.systemd:
+    scope: user
+    daemon_reload: true
+- name: Disable tmux service
+  ansible.builtin.systemd:
+    name: tmux.service
+    scope: user
+    enabled: false
+- name: Enable tmux service
+  ansible.builtin.systemd:
+    name: tmux.service
+    scope: user
+    enabled: true
+- name: Print restart notice
+  ansible.builtin.debug:
+    msg: >-
+      Manually restarted via `systemctl --user restart tmux` from outside
+      tmux when ready to apply new systemd unit config.

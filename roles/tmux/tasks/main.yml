@@ -65,34 +65,11 @@
         src: tmux.service.j2
         dest: ~/.config/systemd/user/tmux.service
         mode: "0644"
-      register: _tmux_unit
-
-    - name: Reload user systemd manager
-      ansible.builtin.systemd:
-        scope: user
-        daemon_reload: true
-      when: _tmux_unit is changed
-
-    - name: Disable tmux service
-      ansible.builtin.systemd:
-        name: tmux.service
-        scope: user
-        enabled: false
-      when: _tmux_unit is changed
-
-    - name: Enable tmux service
-      ansible.builtin.systemd:
-        name: tmux.service
-        scope: user
-        enabled: true
-      when: _tmux_unit is changed
-
-    - name: Print restart notice
-      ansible.builtin.debug:
-        msg: >-
-          Manually restarted via `systemctl --user restart tmux` from outside
-          tmux when ready to apply new systemd unit config.
-      when: _tmux_unit is changed
+      notify:
+        - Reload user systemd manager
+        - Disable tmux service
+        - Enable tmux service
+        - Print restart notice
 
     - name: Enable tmux user service
       ansible.builtin.systemd:
